@@ -1,5 +1,4 @@
 .articles{
-    border: 1 px solid green;
     display: flex;
     width: 100%;
     max-width: 1280px;
@@ -9,11 +8,9 @@
 
 .articles__main{
     width: 620px;
-    border: 1px solid red;
     height: auto;
 }
 
 .articles__others{
-    border: 1px solid pink;
     width: 620px;
 }

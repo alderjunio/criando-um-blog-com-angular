@@ -6,3 +6,8 @@
     color: #fff;
     font-family: 'Segoe UI', sans-serif;
 }
+
+a{
+    text-decoration: none;
+    cursor: pointer;
+}
