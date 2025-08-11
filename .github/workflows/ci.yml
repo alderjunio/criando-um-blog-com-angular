@@ -1,0 +1,50 @@
+name: Deploy dominio principal (alderjunio.com.br)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Build do projeto (Angular 19 - production)
+        run: npx ng build --configuration production
+
+      - name: Preparar pasta para deploy
+        run: |
+          mkdir deploy
+          cp -r dist/alderjunio.com.br/browser/* deploy/
+          cp .htaccess deploy/
+
+      - name: Limpar arquivos antigos no servidor
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd /home/u308943209/domains/alderjunio.com.br/public_html
+            # Remove arquivos do Angular no domínio principal sem tocar na pasta 'app'
+            find . -maxdepth 1 -type f ! -name '.htaccess' ! -name 'app' -exec rm -f {} \;
+            find . -maxdepth 1 -type d ! -name 'app' -exec rm -rf {} \;
+
+      - name: Deploy para Hostinger (Angular + .htaccess)
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-rltgoDzvO"
+          SOURCE: "deploy/"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          TARGET: "/home/u308943209/domains/alderjunio.com.br/public_html"
