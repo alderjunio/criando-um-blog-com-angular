@@ -22,7 +22,7 @@ jobs:
       - name: Preparar pasta para deploy
         run: |
           mkdir deploy
-          cp -r dist/blog/* deploy/
+          cp -r dist/blog/browser/* deploy/
           [ -f .htaccess ] && cp .htaccess deploy/ || echo "Sem .htaccess para copiar"
 
       - name: Limpar arquivos antigos no servidor
